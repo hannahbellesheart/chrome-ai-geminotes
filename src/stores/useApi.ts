@@ -1,8 +1,6 @@
 import { create } from 'zustand';
 
-import useGeminotes from '@geminotes/stores/useGeminotes';
-import cleanContent from '@geminotes/utils/cleanContent';
-import canUseModel from '@geminotes/utils/canUseModel';
+import executeModel from '@geminotes/utils/executeModel';
 
 interface ApiStore {
     loading: boolean;
@@ -26,33 +24,15 @@ const useApi = create<ApiStore>((set, get) => ({
             return;
         }
 
-        const toSummarize = cleanContent(
-            useGeminotes.getState().currentNote?.content
-        );
-
-        if (!toSummarize) return;
-
         set({ loading: true });
 
-        console.log('Reviewing capabilities');
-        const modelReady = await canUseModel('summarizer');
-
-        if (!modelReady) {
-            set({ loading: false });
-            return;
-        }
-
-        console.log('Summarizing');
-        const session = await window.ai.summarizer.create({
+        const result = await executeModel('summarizer', {
             format: 'plain-text',
             type: 'tl;dr',
             length: 'medium',
         });
 
-        const summary = await session.summarize(toSummarize);
-
-        set({ summary, loading: false });
-        session.destroy();
+        set({ loading: false, summary: result });
     },
     extractKeyPoints: async () => {
         if (get().loading) {
@@ -60,35 +40,32 @@ const useApi = create<ApiStore>((set, get) => ({
             return;
         }
 
-        const toSummarize = cleanContent(
-            useGeminotes.getState().currentNote?.content
-        );
-
-        if (!toSummarize) return;
-
         set({ loading: true });
 
-        console.log('Reviewing capabilities');
-        const modelReady = await canUseModel('summarizer');
-
-        if (!modelReady) {
-            set({ loading: false });
-            return;
-        }
-
-        console.log('Extracting key points');
-        const session = await window.ai.summarizer.create({
+        const result = await executeModel('summarizer', {
             format: 'plain-text',
             type: 'key-points',
             length: 'medium',
         });
 
-        const keyPoints = await session.summarize(toSummarize);
-
-        set({ keyPoints, loading: false });
-        session.destroy();
+        set({ loading: false, keyPoints: result });
     },
-    paraphrase: () => {},
+    paraphrase: async () => {
+        if (get().loading) {
+            console.log('Already loading');
+            return;
+        }
+
+        set({ loading: true });
+
+        const result = await executeModel('rewriter', {
+            tone: 'as-is',
+            format: 'plain-text',
+            length: 'as-is',
+        });
+
+        set({ loading: false, paraphrased: result });
+    },
 }));
 
 export default useApi;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import ZustandHydration from '@geminotes/atoms/ZustandHydration';
@@ -19,15 +19,6 @@ function App() {
 
     const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
     const { notes } = useGeminotes();
-
-    useEffect(() => {
-        if (summary) {
-            console.log(summary);
-        }
-        if (keyPoints) {
-            console.log(keyPoints);
-        }
-    }, [summary, keyPoints]);
 
     return (
         <ZustandHydration>
@@ -81,6 +72,12 @@ function App() {
                 <GeminoteButton onClick={() => extractKeyPoints()}>
                     Extract key points
                 </GeminoteButton>
+                <GeminoteTypography variant="body1">
+                    {summary}
+                </GeminoteTypography>
+                <GeminoteTypography variant="body1">
+                    {keyPoints}
+                </GeminoteTypography>
             </ThemeProvider>
         </ZustandHydration>
     );
