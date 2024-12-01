@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import ZustandHydration from '@geminotes/atoms/ZustandHydration';
@@ -12,11 +12,22 @@ import GeminoteTooltip from '@geminotes/atoms/GeminoteTooltip';
 import GeminoteCard from '@geminotes/organisms/GeminoteCard';
 import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import useGeminotes from './stores/useGeminotes';
+import useApi from './stores/useApi';
 
 function App() {
     const [count, setCount] = useState(0);
 
+    const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
     const { notes } = useGeminotes();
+
+    useEffect(() => {
+        if (summary) {
+            console.log(summary);
+        }
+        if (keyPoints) {
+            console.log(keyPoints);
+        }
+    }, [summary, keyPoints]);
 
     return (
         <ZustandHydration>
@@ -54,7 +65,7 @@ function App() {
                             alert('Deleted ' + id);
                         }}
                     />
-                    {notes && (
+                    {notes.length > 0 && (
                         <GeminoteEditor
                             id={notes[0].id}
                             title={notes[0].title}
@@ -64,6 +75,12 @@ function App() {
                         />
                     )}
                 </GeminoteContainer>
+                <GeminoteButton onClick={() => summarize()}>
+                    Summarize
+                </GeminoteButton>
+                <GeminoteButton onClick={() => extractKeyPoints()}>
+                    Extract key points
+                </GeminoteButton>
             </ThemeProvider>
         </ZustandHydration>
     );
