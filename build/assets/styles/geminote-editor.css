@@ -1,0 +1,63 @@
+.geminote-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.geminote-editor__header {
+    padding: 0 2rem;
+}
+
+.geminote-editor__title {
+    margin: 0;
+    margin-bottom: 0.25rem;
+    font-size: var(--font-size-h1);
+    font-weight: 600;
+}
+
+.geminote-editor__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.geminote-editor__tag {
+    background-color: var(--color-background-light);
+    border-radius: 4px;
+    color: var(--color-secondary);
+}
+
+.geminote-editor__tag .remove-tag {
+    cursor: var(--cursor-pointer);
+    font-size: 0.75rem;
+    margin-left: 0.25rem;
+}
+
+.geminote-editor__date {
+    font-size: var(--font-size-body2);
+    color: var(--color-secondary-text);
+}
+
+.geminote-tags-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    color: var(--color-secondary);
+    width: 100%;
+}
+
+[contentEditable='true']:focus {
+    outline: 1px solid var(--color-secondary-text);
+    padding: 0.2rem 0.1rem;
+    transition: border-color var(--animation-normal-timing)
+            var(--animation-timing-function),
+        padding var(--animation-normal-timing) var(--animation-timing-function);
+}
+
+.geminote-editor__content {
+    background-color: var(--color-white);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}

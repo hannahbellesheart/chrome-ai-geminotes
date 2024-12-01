@@ -1,0 +1,54 @@
+.geminote-card * {
+    margin: 0;
+    border: none;
+}
+.geminote-card {
+    background-color: var(--color-white);
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+.geminote-card__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+.geminote-card__title {
+    font-size: var(--font-size-h2);
+    font-weight: 700;
+}
+.geminote-card__btn {
+    margin-left: auto;
+    color: var(--color-primary);
+    background-color: transparent;
+    cursor: var(--cursor-pointer);
+    transition: color var(--animation-normal-timing)
+        var(--animation-timing-function);
+}
+.geminote-card__btn:hover {
+    color: var(--color-secondary);
+}
+.geminote-card__content {
+    margin-bottom: 0.5rem;
+}
+.geminote-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+.geminote-card__tag {
+    color: var(--color-secondary);
+    padding: 0.15rem 0.25rem;
+}
+.geminote-card__footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.geminote-card__date {
+    font-size: var(--font-size-body2);
+    color: var(--color-secondary-text);
+}
