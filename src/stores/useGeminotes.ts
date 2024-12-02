@@ -29,7 +29,7 @@ const useGeminotes = create<GeminotesStore>()(
             addNote: (title, content, tags, sources) => {
                 const newNote = new Geminote(title, content, tags, sources);
                 const notes = get().notes;
-                notes.push(newNote);
+                notes.unshift(newNote);
                 set({ notes });
             },
 
