@@ -7,7 +7,10 @@ import GlobalStyle from '@geminotes/themes/GlobalStyles';
 import GeminoteContainer from '@geminotes/atoms/GeminoteContainer';
 import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import GeminoteMainToolbar from '@geminotes/organisms/GeminoteMainToolbar';
+import GeminoteTypography from '@geminotes/atoms/GeminoteTypography';
+import GeminoteButton from '@geminotes/atoms/GeminoteButton';
 import useGeminotes from './stores/useGeminotes';
+import useApi from './stores/useApi';
 
 function App() {
     const [currentNoteId, setCurrentNoteId] = useState('');
@@ -16,6 +19,7 @@ function App() {
         setCurrentNoteId(noteId);
     };
 
+    const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
     const { notes } = useGeminotes();
 
     const selectedNote = notes.find((note) => note.id === currentNoteId);
@@ -41,6 +45,18 @@ function App() {
                         />
                     )}
                 </GeminoteContainer>
+                <GeminoteButton onClick={() => summarize()}>
+                    Summarize
+                </GeminoteButton>
+                <GeminoteButton onClick={() => extractKeyPoints()}>
+                    Extract key points
+                </GeminoteButton>
+                <GeminoteTypography variant="body1">
+                    {summary}
+                </GeminoteTypography>
+                <GeminoteTypography variant="body1">
+                    {keyPoints}
+                </GeminoteTypography>
             </ThemeProvider>
         </ZustandHydration>
     );

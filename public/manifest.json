@@ -3,7 +3,7 @@
     "name": "Geminotes",
     "version": "1.0.0",
     "description": "Create smart notes of any article!",
-    "permissions": ["sidePanel", "tabs", "storage", "scripting"],
+    "permissions": ["sidePanel", "tabs", "storage", "scripting", "activeTab"],
     "background": {
         "service_worker": "service-worker.js"
     },

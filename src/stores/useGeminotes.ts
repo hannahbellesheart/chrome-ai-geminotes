@@ -6,6 +6,8 @@ import { GeminoteProps } from '@geminotes/props';
 
 interface GeminotesStore {
     notes: Geminote[];
+    currentNote: Geminote | null;
+    setCurrentNote: (id: string) => void;
     addNote: (
         title: string,
         content: string[],
@@ -25,6 +27,12 @@ const useGeminotes = create<GeminotesStore>()(
     persist(
         (set, get) => ({
             notes: [],
+            currentNote: null,
+
+            setCurrentNote: (id) => {
+                const note = get().findNote({ id });
+                set({ currentNote: note });
+            },
 
             addNote: (title, content, tags, sources) => {
                 const newNote = new Geminote(title, content, tags, sources);
@@ -40,7 +48,7 @@ const useGeminotes = create<GeminotesStore>()(
                 if (!note) return false;
 
                 note.update(updates);
-                set({ notes });
+                set({ notes, currentNote: note });
 
                 return true;
             },
