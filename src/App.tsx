@@ -6,9 +6,9 @@ import DefaultTheme from '@geminotes/themes/DefaultTheme';
 import GlobalStyle from '@geminotes/themes/GlobalStyles';
 import GeminoteContainer from '@geminotes/atoms/GeminoteContainer';
 import GeminoteMainToolbar from '@geminotes/organisms/GeminoteMainToolbar';
-import useGeminotes from './stores/useGeminotes';
-import useApi from './stores/useApi';
-import useContent from './stores/useContent';
+import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
+import useGeminotes from '@geminotes/stores/useGeminotes';
+import useContent from '@geminotes/stores/useContent';
 
 function App() {
     const [currentNoteId, setCurrentNoteId] = useState('');
@@ -19,7 +19,6 @@ function App() {
     const handleNoteId = (noteId: string) => {
         setCurrentNoteId(noteId);
     };
-    const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
     const { editNote, currentNote, notes } = useGeminotes();
     const { currentTabId, getTabId, executeScript } = useContent();
     // Get Tab Id for the current content store
@@ -70,10 +69,11 @@ function App() {
         setCurrentNoteId(savedNote.id);
     };
 
-
     useEffect(() => {
         onSelectTextForNote();
     }, [currentNote]);
+
+    const selectedNote = notes.find((note) => note.id === currentNoteId);
 
     useEffect(() => {
         if (currentNoteId && !selectedNote) {
