@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import ZustandHydration from '@geminotes/atoms/ZustandHydration';
@@ -9,16 +8,43 @@ import GeminoteButton from '@geminotes/atoms/GeminoteButton';
 import GeminoteTypography from '@geminotes/atoms/GeminoteTypography';
 import GeminoteTag from '@geminotes/atoms/GeminoteTag';
 import GeminoteTooltip from '@geminotes/atoms/GeminoteTooltip';
-import GeminoteCard from '@geminotes/organisms/GeminoteCard';
 import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import useGeminotes from './stores/useGeminotes';
 import useApi from './stores/useApi';
+import useContent from './stores/useContent';
+import { useEffect, useState } from 'react';
 
 function App() {
-    const [count, setCount] = useState(0);
-
+    const [currentSelectedText, setCurrentSelectedText] = useState('');
     const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
-    const { notes } = useGeminotes();
+    const { notes, addNote } = useGeminotes();
+    const { currentTabId, getTabId, executeScript } = useContent();
+    // Get Tab Id for the current content store
+    getTabId();
+    const onCreateNewNote = async () => {
+        executeScript(() => {
+            const iconUrl = chrome.runtime.getURL(
+                '/assets/images/cursor-pointer.png'
+            );
+            document.body.style.cursor = `url(${iconUrl}), auto`;
+        });
+        chrome.tabs.sendMessage(
+            currentTabId,
+            {
+                action: 'activeSelect',
+                message: currentTabId,
+            },
+            (selectedText) => {
+                setCurrentSelectedText(selectedText);
+            }
+        );
+    };
+
+    useEffect(() => {
+        if (currentSelectedText != '') {
+            addNote('', [currentSelectedText], [], {});
+        }
+    }, [currentSelectedText]);
 
     return (
         <ZustandHydration>
@@ -26,10 +52,10 @@ function App() {
                 <GlobalStyle />
                 <GeminoteContainer>
                     <GeminoteButton
-                        onClick={() => setCount((count) => count + 1)}
+                        onClick={() => onCreateNewNote()}
                         style={{ width: '100%' }}
                     >
-                        count is {count}
+                        New Note
                     </GeminoteButton>
                     <GeminoteButton color="secondary" href="/assets">
                         Texto de tipo link
@@ -47,24 +73,16 @@ function App() {
                     <GeminoteTooltip title="Tooltip">
                         <GeminoteButton>Hover me!</GeminoteButton>
                     </GeminoteTooltip>
-                    <GeminoteCard
-                        id="geminote-1733071416111-p196y9it7"
-                        title="Card Title"
-                        tags={['hello', 'these', 'are', 'tags']}
-                        updatedAt={new Date()}
-                        onDelete={(id) => {
-                            alert('Deleted ' + id);
-                        }}
-                    />
-                    {notes.length > 0 && (
-                        <GeminoteEditor
-                            id={notes[0].id}
-                            title={notes[0].title}
-                            tags={notes[0].tags}
-                            content={notes[0].content}
-                            updatedAt={notes[0].updatedAt}
-                        />
-                    )}
+                    {notes.length > 0 &&
+                        notes.map((note) => (
+                            <GeminoteEditor
+                                id={note.id}
+                                title={note.title}
+                                tags={note.tags}
+                                content={note.content}
+                                updatedAt={note.updatedAt}
+                            />
+                        ))}
                 </GeminoteContainer>
                 <GeminoteButton onClick={() => summarize()}>
                     Summarize

@@ -10,11 +10,25 @@
     "side_panel": {
         "default_path": "index.html"
     },
+    "action": {},
     "icons": {
         "16": "assets/images/icon-16.png",
         "32": "assets/images/icon-32.png",
         "48": "assets/images/icon-48.png",
         "128": "assets/images/icon-120.png"
     },
+    "web_accessible_resources": [
+        {
+            "matches": ["<all_urls>"],
+            "resources": ["/assets/images/cursor-pointer.png"]
+        }
+    ],
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content.js"]
+        }
+    ],
+
     "host_permissions": ["http://*/*", "https://*/*"]
 }
