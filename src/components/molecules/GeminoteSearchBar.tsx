@@ -9,7 +9,7 @@ interface SearchBarProps {
     debounceTime?: number;
 }
 
-const StyledSearchBar = styled.div<{}>`
+const StyledSearchBar = styled.div`
     display: flex;
     gap: ${({ theme }) => theme.spacing(2)};
     align-items: center;
@@ -57,7 +57,6 @@ const GeminoteSearchBar = ({
                 clearTimeout(timer);
             }
 
-            // Configuramos el nuevo temporizador
             const newTimer = setTimeout(() => {
                 if (onSearch) {
                     onSearch(value);

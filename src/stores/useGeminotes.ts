@@ -13,7 +13,7 @@ interface GeminotesStore {
         content: string[],
         tags: string[],
         sources: Record<string, any>
-    ) => void;
+    ) => Geminote;
     editNote: (id: string, updates: Partial<GeminoteProps>) => boolean;
     deleteNote: (id: string) => void;
     findNote: (params: {
@@ -39,6 +39,8 @@ const useGeminotes = create<GeminotesStore>()(
                 const notes = get().notes;
                 notes.unshift(newNote);
                 set({ notes });
+
+                return newNote;
             },
 
             editNote: (id, updates) => {

@@ -7,9 +7,11 @@ import GeminoteSearchBar from '@geminotes/molecules/GeminoteSearchBar';
 import GeminoteButton from '@geminotes/atoms/GeminoteButton';
 import Geminote from '@geminotes/models/Geminote';
 import GeminoteMainToolbarNavbar from '@geminotes/molecules/GeminoteMainToolbarNavbar';
+import GeminoteAlert from '@geminotes/atoms/GeminoteAlert';
 
 interface GeminoteMainToolbarProps {
     onNoteId?: (value: string) => void;
+    lastNoteId?: string;
 }
 
 const StyledMenuWrapper = styled.div`
@@ -28,13 +30,24 @@ const NoResultsText = styled.p`
         theme.spacing(2)}; /* Opcional, agrega algo de espacio */
 `;
 
-const GeminoteMainToolbar = ({ onNoteId }: GeminoteMainToolbarProps) => {
+const GeminoteMainToolbar = ({
+    onNoteId,
+    lastNoteId,
+}: GeminoteMainToolbarProps) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredNotes, setFilteredNotes] = useState<Geminote[]>([]);
+    const [currentLastNoteId, setCurrentLastNoteId] = useState<
+        string | undefined
+    >(lastNoteId);
 
     const { findNote, addNote } = useGeminotes();
 
+    const [showAlert, setShowAlert] = useState(false);
+
     const handleDelete = (noteId: string) => {
+        if (noteId === currentLastNoteId) {
+            setCurrentLastNoteId(undefined);
+        }
         useGeminotes.getState().deleteNote(noteId);
         const allNotes = useGeminotes.getState().notes;
         setFilteredNotes(allNotes);
@@ -84,6 +97,8 @@ const GeminoteMainToolbar = ({ onNoteId }: GeminoteMainToolbarProps) => {
         };
         addNote(newNote.title, newNote.content, newNote.tags, newNote.sources);
         setFilteredNotes(useGeminotes.getState().notes);
+        setShowAlert(true);
+        setTimeout(() => setShowAlert(false), 1000);
     };
 
     const handleSelectNote = (noteId: string) => {
@@ -94,21 +109,25 @@ const GeminoteMainToolbar = ({ onNoteId }: GeminoteMainToolbarProps) => {
 
     return (
         <StyledMenuWrapper>
-            <GeminoteMainToolbarNavbar currentNoteId=""></GeminoteMainToolbarNavbar>
+            <GeminoteMainToolbarNavbar
+                currentNoteId={currentLastNoteId}
+                onNoteId={handleSelectNote}
+            />
             <GeminoteSearchBar
                 placeholder="Search geminotes..."
                 onSearch={handleSearch}
             />
 
-            {/* Botón para crear la nueva nota */}
             <GeminoteButton
                 style={{ width: '100%' }}
                 onClick={handleCreateNote}
             >
                 Create Geminote <i className="icon-add"></i>
             </GeminoteButton>
+            {showAlert && (
+                <GeminoteAlert message="¡Geminote Created!" state="success" />
+            )}
 
-            {/* Mostrar las notas filtradas */}
             <StyledCardWrapper>
                 {filteredNotes.length > 0 ? (
                     filteredNotes.map((note) => (
