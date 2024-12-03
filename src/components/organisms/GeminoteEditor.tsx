@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import GeminoteTypography from '@geminotes/atoms/GeminoteTypography';
 import GeminoteEditableTypography from '@geminotes/molecules/GeminoteEditableTypography';
@@ -9,12 +9,16 @@ import GeminotePaper from '@geminotes/atoms/GeminotePaper';
 import { GeminoteProps } from '@geminotes/props';
 // import { NEW_LINE, SOURCE_REFERENCE } from '@geminotes/utils/validation';
 import getFormattedDate from '@geminotes/utils/getFormattedDate';
-import GeminoteButton from '@geminotes/atoms/GeminoteButton';
 import GeminoteEditorNavbar from '@geminotes/molecules/GeminoteEditorNavbar';
+import GeminoteButton from '@geminotes/atoms/GeminoteButton';
+import useApi from '@geminotes/stores/useApi';
 
 import useGeminotes from '@geminotes/stores/useGeminotes';
 
-interface GeminoteEditorProps extends Omit<GeminoteProps, 'createdAt'> {}
+interface GeminoteEditorProps extends Omit<GeminoteProps, 'createdAt'> {
+    onOpenMenu?: () => void;
+    onAddNote?: () => void;
+}
 
 const StyledWrapper = styled.div`
     display: flex;
@@ -44,22 +48,48 @@ const StyledTagsWrapper = styled.div`
     margin-bottom: ${({ theme }) => theme.spacing(1)};
 `;
 
+const StyledButtonsWrapper = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: ${({ theme }) => theme.spacing(1)};
+    margin-top: ${({ theme }) => theme.spacing(3)};
+`;
+
 const GeminoteEditor = ({
     id,
     title,
     tags,
     content,
     updatedAt,
+    onOpenMenu,
+    onAddNote,
 }: GeminoteEditorProps) => {
     const [editableTitle, setEditableTitle] = useState<string>(
         title || 'Untitled'
     );
     const [editableContent, setEditableContent] = useState<string[]>(
-        content || ['Start typing...']
+        !content ||
+            content.length === 0 ||
+            (content.length === 1 && content[0] === '')
+            ? ['Start typing...']
+            : content
     );
+
+    useEffect(() => {
+        console.log(
+            !content ||
+                content.length === 0 ||
+                (content.length === 1 && content[0] === '')
+                ? 'start typing'
+                : content
+        );
+    }, [content]);
+
     const [editableTags, setEditableTags] = useState<string[]>(tags || []);
 
     const { editNote } = useGeminotes();
+
+    const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
 
     const handleTitleChange = (newTitle: string) => {
         setEditableTitle(newTitle);
@@ -97,6 +127,12 @@ const GeminoteEditor = ({
         setEditableTags(updatedTags);
     };
 
+    const handleOpenMenu = () => {
+        if (onOpenMenu) {
+            onOpenMenu();
+        }
+    };
+
     const handleSave = () => {
         editNote(id, {
             title: editableTitle,
@@ -105,10 +141,19 @@ const GeminoteEditor = ({
         });
     };
 
+    const handleAddNote = () => {
+        if (onAddNote) {
+            onAddNote();
+        }
+    };
+
     return (
         <StyledWrapper>
-            {/* {id} */}
-            <GeminoteEditorNavbar />
+            <GeminoteEditorNavbar
+                onSaveNote={handleSave}
+                onOpenMenu={handleOpenMenu}
+                onAddNote={handleAddNote}
+            />
             <StyledEditorHeader>
                 <GeminoteEditableTypography
                     name="note-title"
@@ -133,6 +178,20 @@ const GeminoteEditor = ({
                 <GeminoteTypography variant="body1" color="info">
                     Updated at {getFormattedDate(updatedAt) || 'unknown date'}
                 </GeminoteTypography>
+                <StyledButtonsWrapper>
+                    <GeminoteButton onClick={() => summarize()}>
+                        Summarize
+                    </GeminoteButton>
+                    <GeminoteButton onClick={() => extractKeyPoints()}>
+                        Extract key points
+                    </GeminoteButton>
+                    <GeminoteTypography variant="body1">
+                        {summary}
+                    </GeminoteTypography>
+                    <GeminoteTypography variant="body1">
+                        {keyPoints}
+                    </GeminoteTypography>
+                </StyledButtonsWrapper>
             </StyledEditorHeader>
             <StyledEditorContent>
                 {editableContent &&
@@ -149,9 +208,7 @@ const GeminoteEditor = ({
                         </GeminoteEditableTypography>
                     ))}
             </StyledEditorContent>
-            <StyledEditorFooter>
-                <GeminoteButton onClick={handleSave}>Save</GeminoteButton>
-            </StyledEditorFooter>
+            <StyledEditorFooter></StyledEditorFooter>
         </StyledWrapper>
     );
 };

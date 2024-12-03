@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 interface GeminoteTooltipProps extends ComponentPropsWithRef<'div'> {
     title: string;
+    position?: 'top' | 'bottom';
 }
 
 const TooltipContainer = styled.div`
@@ -10,10 +11,13 @@ const TooltipContainer = styled.div`
     display: inline-block;
 `;
 
-const TooltipText = styled.div`
+const TooltipText = styled.div<{ position: 'top' | 'bottom' }>`
     visibility: hidden;
     position: absolute;
-    bottom: 125%;
+    ${({ position }) =>
+        position === 'bottom'
+            ? 'top: 125%'
+            : 'bottom: 125%'}; // Ajusta la posición según la prop
     left: 50%;
     transform: translateX(-50%);
     background-color: ${({ theme }) => theme.palette.text};
@@ -23,18 +27,6 @@ const TooltipText = styled.div`
     z-index: 1;
 
     ${({ theme }) => theme.applyTypography(theme.typography.body2)}
-
-    &::after {
-        content: '';
-        position: absolute;
-        top: 100%;
-        left: 50%;
-        margin-left: -5px;
-        border-width: 5px;
-        border-style: solid;
-        border-color: ${({ theme }) => theme.palette.text} transparent
-            transparent transparent;
-    }
 `;
 
 const TooltipWrapper = styled.div`
@@ -46,12 +38,14 @@ const TooltipWrapper = styled.div`
 const GeminoteTooltip: React.FC<GeminoteTooltipProps> = ({
     title,
     children,
+    position = 'top',
     ...props
 }) => {
     return (
         <TooltipWrapper {...props}>
             <TooltipContainer>
-                {children} <TooltipText>{title}</TooltipText>
+                {children}{' '}
+                <TooltipText position={position}>{title}</TooltipText>
             </TooltipContainer>
         </TooltipWrapper>
     );
