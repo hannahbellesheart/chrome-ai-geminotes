@@ -1,6 +1,6 @@
 const GOOGLE_ORIGIN = 'https://www.google.com';
 
-chrome.tabs.onUpdated.addListener(async (tabId, info, tab) => {
+chrome.action.onClicked.addListener(async (tabId, info, tab) => {
     if (!tab.url) return;
     const url = new URL(tab.url);
     // Enables the side panel on google.com

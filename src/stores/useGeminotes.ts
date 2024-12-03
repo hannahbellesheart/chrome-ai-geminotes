@@ -38,6 +38,7 @@ const useGeminotes = create<GeminotesStore>()(
                 const newNote = new Geminote(title, content, tags, sources);
                 const notes = get().notes;
                 notes.unshift(newNote);
+                get().setCurrentNote(newNote.id);
                 set({ notes });
 
                 return newNote;

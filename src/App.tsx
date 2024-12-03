@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import ZustandHydration from '@geminotes/atoms/ZustandHydration';
 import DefaultTheme from '@geminotes/themes/DefaultTheme';
 import GlobalStyle from '@geminotes/themes/GlobalStyles';
 import GeminoteContainer from '@geminotes/atoms/GeminoteContainer';
-import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import GeminoteMainToolbar from '@geminotes/organisms/GeminoteMainToolbar';
-import useGeminotes from './stores/useGeminotes';
+import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
+import useGeminotes from '@geminotes/stores/useGeminotes';
+import useContent from '@geminotes/stores/useContent';
 
 function App() {
     const [currentNoteId, setCurrentNoteId] = useState('');
@@ -17,6 +18,33 @@ function App() {
 
     const handleNoteId = (noteId: string) => {
         setCurrentNoteId(noteId);
+    };
+    const { editNote, currentNote, notes } = useGeminotes();
+    const { currentTabId, getTabId, executeScript } = useContent();
+    // Get Tab Id for the current content store
+    getTabId();
+    const onSelectTextForNote = async () => {
+        executeScript(() => {
+            const iconUrl = chrome.runtime.getURL(
+                '/assets/images/cursor-pointer.png'
+            );
+            document.body.style.cursor = `url(${iconUrl}), auto`;
+        });
+        chrome.tabs.sendMessage(
+            currentTabId,
+            {
+                action: 'activeSelect',
+                message: currentTabId,
+            },
+            (selectedText) => {
+                // use the recent created one or the selected one
+                if (currentNote) {
+                    editNote(currentNote.id, {
+                        content: [selectedText],
+                    });
+                }
+            }
+        );
     };
 
     const handleOpenMenu = () => {
@@ -41,7 +69,9 @@ function App() {
         setCurrentNoteId(savedNote.id);
     };
 
-    const { notes } = useGeminotes();
+    useEffect(() => {
+        onSelectTextForNote();
+    }, [currentNote]);
 
     const selectedNote = notes.find((note) => note.id === currentNoteId);
 
