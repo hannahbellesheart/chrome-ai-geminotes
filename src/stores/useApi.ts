@@ -12,6 +12,7 @@ interface ApiStore {
     paraphrase: () => void;
     keyPoints: string;
     extractKeyPoints: () => void;
+    clear: () => void;
 }
 
 const getStoredContent = () => {
@@ -98,6 +99,10 @@ const useApi = create<ApiStore>((set, get) => ({
         );
 
         set({ loading: false, paraphrased: result });
+    },
+
+    clear: () => {
+        set({ summary: '', paraphrased: '', keyPoints: '' });
     },
 }));
 
