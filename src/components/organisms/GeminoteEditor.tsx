@@ -75,17 +75,25 @@ const GeminoteEditor = ({
     const [editableTitle, setEditableTitle] = useState<string>(
         title || 'Untitled'
     );
-    const [editableContent, setEditableContent] = useState<string[]>(
+    const [editableContent, setEditableContent] = useState(
         !content ||
             content.length === 0 ||
             (content.length === 1 && content[0] === '')
-            ? ['Start typing...']
-            : content
+            ? [{ id: crypto.randomUUID(), text: 'Start typing...' }]
+            : content.map((text) => ({ id: crypto.randomUUID(), text }))
     );
+
+    useEffect(() => {
+        if (editableContent.length === 0) {
+            setEditableContent([
+                { id: crypto.randomUUID(), text: 'Start typing...' },
+            ]);
+        }
+    }, [editableContent]);
 
     const [editableTags, setEditableTags] = useState<string[]>(tags || []);
 
-    const { editNote, currentNote } = useGeminotes();
+    const { editNote } = useGeminotes();
 
     const {
         summarize,
@@ -105,14 +113,10 @@ const GeminoteEditor = ({
         handleTitleChange(newTitle);
     };
 
-    const handleContentChange = (index: number, newText: string) => {
-        const updatedContent = [...editableContent];
-        updatedContent[index] = newText;
-        setEditableContent(updatedContent);
-    };
-
     const handleContentEdit = (index: number, newText: string) => {
-        handleContentChange(index, newText);
+        const updatedContent = [...editableContent];
+        updatedContent[index] = { ...updatedContent[index], text: newText };
+        setEditableContent(updatedContent);
     };
 
     const handleTagAddition = (newTag: string) => {
@@ -138,7 +142,7 @@ const GeminoteEditor = ({
             // save the most recent changes
             editNote(id, {
                 title: editableTitle,
-                content: editableContent,
+                content: editableContent.map((line) => line.text),
                 tags: editableTags,
             });
             onOpenMenu();
@@ -148,7 +152,7 @@ const GeminoteEditor = ({
     const handleSave = () => {
         editNote(id, {
             title: editableTitle,
-            content: editableContent,
+            content: editableContent.map((line) => line.text),
             tags: editableTags,
         });
     };
@@ -159,11 +163,22 @@ const GeminoteEditor = ({
         }
     };
 
-    useEffect(() => {
-        if (currentNote) {
-            setEditableContent(currentNote.content);
+    // Detect if 'enter' is pressed, if it is, it adds a new paragraph to editableContent when required
+    const handleKeyDown = (
+        event: React.KeyboardEvent<HTMLInputElement>,
+        index: number
+    ) => {
+        if (event.key === 'Enter' && event.currentTarget.value !== '') {
+            event.preventDefault();
+            const updatedContent = [...editableContent];
+            updatedContent.splice(index + 1, 0, {
+                id: crypto.randomUUID(),
+                text: '',
+            });
+            setEditableContent(updatedContent);
         }
-    }, [currentNote]);
+    };
+
     return (
         <StyledWrapper>
             <GeminoteEditorNavbar
@@ -239,13 +254,14 @@ const GeminoteEditor = ({
                     editableContent.map((line, index) => (
                         <GeminoteEditableTypography
                             name="note-content"
-                            key={index}
+                            key={line.id}
                             index={index}
+                            onKeyDown={(event) => handleKeyDown(event, index)}
                             onEdit={(newText) =>
                                 handleContentEdit(index, newText)
                             }
                         >
-                            {line}
+                            {line.text}
                         </GeminoteEditableTypography>
                     ))}
             </StyledEditorContent>

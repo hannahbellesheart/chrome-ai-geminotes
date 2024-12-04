@@ -10,12 +10,14 @@ interface GeminoteEditableTypographyProps extends GeminoteTypographyProps {
     index?: number | string;
     children?: string;
     onEdit?: (newValue: string) => void;
+    onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
     blurOnSpace?: boolean;
 }
 
 const StyledInput = styled.input<GeminoteTypographyProps>`
     display: block;
     width: 100%;
+    word-break: break-word;
     background: transparent;
 
     ${({ theme, variant = 'body1' }) =>
@@ -33,6 +35,7 @@ const GeminoteEditableTypography = ({
     name,
     index,
     onEdit,
+    onKeyDown,
     blurOnSpace,
     ...props
 }: GeminoteEditableTypographyProps) => {
@@ -56,6 +59,7 @@ const GeminoteEditableTypography = ({
             e.stopPropagation();
             handleBlur();
         }
+        if (onKeyDown) onKeyDown(e);
     };
 
     const handleEdition = () => {
