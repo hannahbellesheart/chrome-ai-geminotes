@@ -84,7 +84,7 @@ const GeminoteEditor = ({
     );
 
     useEffect(() => {
-        if (editableContent.length === 0) {
+        if (!editableContent || editableContent.length === 0) {
             setEditableContent([
                 { id: crypto.randomUUID(), text: 'Start typing...' },
             ]);
