@@ -5,7 +5,7 @@ class Geminote implements GeminoteProps {
     title: string;
     content: string[];
     tags: string[];
-    sources: Record<string, any>;
+    sources: Record<string, unknown>;
     createdAt: Date;
     updatedAt: Date;
 
@@ -22,7 +22,7 @@ class Geminote implements GeminoteProps {
         title: string = '',
         content: string[] = [],
         tags: string[] = [],
-        sources: Record<string, any> = {},
+        sources: Record<string, unknown> = {},
         createdAt: Date = new Date()
     ) {
         this.id = this.generateId();
@@ -63,7 +63,7 @@ class Geminote implements GeminoteProps {
         title?: string;
         content?: string[];
         tags?: string[];
-        sources?: Record<string, any>;
+        sources?: Record<string, unknown>;
     }): void {
         if (title !== undefined) this.title = title;
         if (content !== undefined) this.content = content;
@@ -79,7 +79,7 @@ class Geminote implements GeminoteProps {
      *
      * @returns {object} - A JSON representation of the note.
      */
-    toJSON(): Record<string, any> {
+    toJSON(): Record<string, unknown> {
         return {
             id: this.id,
             title: this.title,

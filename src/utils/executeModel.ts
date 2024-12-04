@@ -1,5 +1,3 @@
-import useGeminotes from '@geminotes/stores/useGeminotes';
-import cleanContent from '@geminotes/utils/cleanContent';
 import canUseModel from '@geminotes/utils/canUseModel';
 import {
     GeminoteApiModelName,
@@ -9,12 +7,9 @@ import {
 
 const executeModel = async (
     model: GeminoteApiModelName,
-    options: GeminoteApiModelCreateOptions
+    options: GeminoteApiModelCreateOptions,
+    toProcess: string
 ): Promise<string | undefined> => {
-    const toProcess = cleanContent(
-        useGeminotes.getState().currentNote?.content
-    );
-
     if (!toProcess) return undefined;
 
     const modelReady = await canUseModel(model);

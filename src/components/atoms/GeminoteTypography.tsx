@@ -26,7 +26,6 @@ const StyledTypography = styled.span<GeminoteTypographyProps>`
 
 const GeminoteTypography: React.FC<GeminoteTypographyProps> = ({
     variant = 'body1',
-    align = 'inherit',
     component,
     className,
     ...props

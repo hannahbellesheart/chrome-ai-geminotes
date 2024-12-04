@@ -12,7 +12,7 @@ interface GeminotesStore {
         title: string,
         content: string[],
         tags: string[],
-        sources: Record<string, any>
+        sources: Record<string, unknown>
     ) => Geminote;
     editNote: (id: string, updates: Partial<GeminoteProps>) => boolean;
     deleteNote: (id: string) => void;

@@ -27,13 +27,13 @@ const GeminoteTagsInput = ({ onCreate, ...props }: GeminoteTagsInputProps) => {
 
     const handleBlur = () => {
         if (text) {
-            onCreate(text);
+            onCreate(text.trim().toLowerCase());
             setText('');
         }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             e.stopPropagation();
             handleBlur();

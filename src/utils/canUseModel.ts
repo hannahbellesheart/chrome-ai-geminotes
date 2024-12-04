@@ -16,14 +16,13 @@ const canUseModel = async (
                 func: async (model: GeminoteApiModelName) => {
                     const modelStatus = (await window.ai[model].capabilities())
                         .available;
+                    let testingSession;
 
                     switch (modelStatus) {
                         case 'readily':
                             return true;
                         case 'after-download':
-                            const testingSession = await window.ai[
-                                model
-                            ].create();
+                            testingSession = await window.ai[model].create();
                             testingSession.destroy();
                             return true;
                         case 'no':

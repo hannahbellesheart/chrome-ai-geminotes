@@ -51,14 +51,25 @@ const GeminoteEditableTag = ({
     const tagRef = useRef<HTMLDivElement>(null);
 
     const handleTagRemoval = () => {
-        if (tagRef.current) {
-            onDelete && onDelete();
+        if (tagRef.current && onDelete) {
+            onDelete();
+        }
+    };
+
+    const handleEdition = (newValue: string) => {
+        if (onEdit) {
+            onEdit(newValue.trim().toLowerCase());
         }
     };
 
     return (
         <StyledWrapper color={color} {...props} ref={tagRef}>
-            <StyledTagText name="tag" color={color} onEdit={onEdit}>
+            <StyledTagText
+                name="tag"
+                color={color}
+                onEdit={handleEdition}
+                blurOnSpace
+            >
                 {children}
             </StyledTagText>
             <GeminoteTooltip title="Delete" style={{ display: 'inline' }}>

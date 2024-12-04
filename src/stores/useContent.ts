@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface ContentStore {
     currentTabId: number;
     getTabId: () => void;
-    executeScript: (fun: () => any) => any;
+    executeScript: (fun: () => unknown) => unknown;
 }
 
 const useContent = create<ContentStore>((set, get) => ({
@@ -18,8 +18,8 @@ const useContent = create<ContentStore>((set, get) => ({
             }
         );
     },
-    executeScript: async (func: () => any) => {
-        return await new Promise<any>(async (resolve) => {
+    executeScript: async (func: () => unknown) => {
+        return await new Promise<unknown>((resolve) => {
             const tabId = get().currentTabId;
             chrome.scripting.executeScript(
                 { target: { tabId }, func },

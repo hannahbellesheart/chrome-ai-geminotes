@@ -3,7 +3,7 @@ export interface GeminoteProps {
     title?: string;
     content?: string[];
     tags?: string[];
-    sources?: Record<string, any>;
+    sources?: Record<string, unknown>;
     createdAt: Date;
     updatedAt: Date;
 }
