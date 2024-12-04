@@ -34,13 +34,12 @@ const GeminoteMainToolbar = ({
     onNoteId,
     lastNoteId,
 }: GeminoteMainToolbarProps) => {
-    const [searchQuery, setSearchQuery] = useState('');
     const [filteredNotes, setFilteredNotes] = useState<Geminote[]>([]);
     const [currentLastNoteId, setCurrentLastNoteId] = useState<
         string | undefined
     >(lastNoteId);
 
-    const { findNote, addNote } = useGeminotes();
+    const { findNote, addNote, notes } = useGeminotes();
 
     const [showAlert, setShowAlert] = useState(false);
 
@@ -54,8 +53,6 @@ const GeminoteMainToolbar = ({
     };
 
     const handleSearch = (value: string) => {
-        setSearchQuery(value);
-
         if (value.trim() === '') {
             const allNotes = useGeminotes.getState().notes;
             setFilteredNotes(allNotes);
@@ -83,11 +80,9 @@ const GeminoteMainToolbar = ({
     };
 
     useEffect(() => {
-        if (searchQuery.trim() === '') {
-            setFilteredNotes(useGeminotes.getState().notes);
-        }
-    }, []);
-
+        notes.forEach((note) => console.log(note.content));
+        setFilteredNotes(notes);
+    }, [notes]);
     const handleCreateNote = () => {
         const newNote = {
             title: 'Untitled',

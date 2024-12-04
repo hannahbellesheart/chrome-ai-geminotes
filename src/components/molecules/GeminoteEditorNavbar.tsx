@@ -30,9 +30,8 @@ const GeminoteEditorNavbar = ({
     const [showSaveAlert, setShowSaveAlert] = useState(false);
 
     const handleOpenMenu = () => {
-        if (onOpenMenu && onSaveNote) {
+        if (onOpenMenu) {
             onOpenMenu();
-            onSaveNote();
         }
     };
 

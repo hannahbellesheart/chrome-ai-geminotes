@@ -45,14 +45,14 @@ const useGeminotes = create<GeminotesStore>()(
             },
 
             editNote: (id, updates) => {
-                const notes = get().notes;
-
+                let notes = get().notes;
                 const note = notes.find((note) => note.id === id);
+                notes = notes.filter((note) => note.id !== id);
                 if (!note) return false;
 
                 note.update(updates);
+                notes.unshift(note);
                 set({ notes, currentNote: note });
-
                 return true;
             },
 
