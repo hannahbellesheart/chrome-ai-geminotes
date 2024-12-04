@@ -209,13 +209,37 @@ const GeminoteEditor = ({
                     Updated at {getFormattedDate(updatedAt) || 'unknown date'}
                 </GeminoteTypography>
                 <StyledButtonsWrapper>
-                    <GeminoteButton onClick={() => paraphrase()}>
+                    <GeminoteButton
+                        onClick={() =>
+                            paraphrase(
+                                editableContent
+                                    .map((line) => line.text)
+                                    .join('\n')
+                            )
+                        }
+                    >
                         Paraphrase
                     </GeminoteButton>
-                    <GeminoteButton onClick={() => summarize()}>
+                    <GeminoteButton
+                        onClick={() =>
+                            summarize(
+                                editableContent
+                                    .map((line) => line.text)
+                                    .join('\n')
+                            )
+                        }
+                    >
                         Summarize
                     </GeminoteButton>
-                    <GeminoteButton onClick={() => extractKeyPoints()}>
+                    <GeminoteButton
+                        onClick={() =>
+                            extractKeyPoints(
+                                editableContent
+                                    .map((line) => line.text)
+                                    .join('\n')
+                            )
+                        }
+                    >
                         Extract key points
                     </GeminoteButton>
                 </StyledButtonsWrapper>

@@ -1,23 +1,17 @@
 import { create } from 'zustand';
 
 import executeModel from '@geminotes/utils/executeModel';
-import useGeminotes from '@geminotes/stores/useGeminotes';
-import cleanContent from '@geminotes/utils/cleanContent';
 
 interface ApiStore {
     loading: boolean;
     summary: string;
-    summarize: () => void;
+    summarize: (toProcess: string) => void;
     paraphrased: string;
-    paraphrase: () => void;
+    paraphrase: (toProcess: string) => void;
     keyPoints: string;
-    extractKeyPoints: () => void;
+    extractKeyPoints: (toProcess: string) => void;
     clear: () => void;
 }
-
-const getStoredContent = () => {
-    return cleanContent(useGeminotes.getState().currentNote?.content);
-};
 
 const useApi = create<ApiStore>((set, get) => ({
     loading: false,
@@ -25,12 +19,11 @@ const useApi = create<ApiStore>((set, get) => ({
     paraphrased: '',
     keyPoints: '',
 
-    summarize: async () => {
+    summarize: async (toProcess: string) => {
         if (get().loading) {
             console.log('Already loading');
             return;
         }
-        const toProcess = getStoredContent();
         if (!toProcess) {
             console.log('No content to summarize');
             return;
@@ -50,12 +43,11 @@ const useApi = create<ApiStore>((set, get) => ({
 
         set({ loading: false, summary: result });
     },
-    extractKeyPoints: async () => {
+    extractKeyPoints: async (toProcess: string) => {
         if (get().loading) {
             console.log('Already loading');
             return;
         }
-        const toProcess = getStoredContent();
         if (!toProcess) {
             console.log('No content to extract key points from');
             return;
@@ -75,12 +67,11 @@ const useApi = create<ApiStore>((set, get) => ({
 
         set({ loading: false, keyPoints: result });
     },
-    paraphrase: async () => {
+    paraphrase: async (toProcess: string) => {
         if (get().loading) {
             console.log('Already loading');
             return;
         }
-        const toProcess = getStoredContent();
         if (!toProcess) {
             console.log('No content to paraphrase');
             return;
