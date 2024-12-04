@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import ZustandHydration from '@geminotes/atoms/ZustandHydration';
@@ -9,21 +9,17 @@ import GeminoteMainToolbar from '@geminotes/organisms/GeminoteMainToolbar';
 import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import useGeminotes from '@geminotes/stores/useGeminotes';
 import useContent from '@geminotes/stores/useContent';
-
 function App() {
-    const [currentNoteId, setCurrentNoteId] = useState('');
     const [lastNoteId, setLastNoteId] = useState('');
 
-    const { addNote } = useGeminotes();
-
+    const { addNote, editNote, setCurrentNote, currentNote } = useGeminotes();
     const handleNoteId = (noteId: string) => {
-        setCurrentNoteId(noteId);
+        setCurrentNote(noteId);
     };
-    const { editNote, currentNote, notes } = useGeminotes();
     const { currentTabId, getTabId, executeScript } = useContent();
     // Get Tab Id for the current content store
     getTabId();
-    const onSelectTextForNote = async () => {
+    const onSelectTextForNote = () => {
         executeScript(() => {
             const iconUrl = chrome.runtime.getURL(
                 '/assets/images/cursor-pointer.png'
@@ -48,8 +44,8 @@ function App() {
     };
 
     const handleOpenMenu = () => {
-        setLastNoteId(currentNoteId);
-        setCurrentNoteId('');
+        setLastNoteId(currentNote?.id || '');
+        setCurrentNote('');
     };
 
     const handleAddNote = () => {
@@ -59,50 +55,32 @@ function App() {
             tags: [],
             sources: {},
         };
-        const savedNote = addNote(
-            newNote.title,
-            newNote.content,
-            newNote.tags,
-            newNote.sources
-        );
-
-        setCurrentNoteId(savedNote.id);
+        addNote(newNote.title, newNote.content, newNote.tags, newNote.sources);
     };
-
-    useEffect(() => {
-        onSelectTextForNote();
-    }, [currentNote]);
-
-    const selectedNote = notes.find((note) => note.id === currentNoteId);
-
-    useEffect(() => {
-        if (currentNoteId && !selectedNote) {
-            console.log(`Note with ID ${currentNoteId} not found.`);
-        }
-    }, [currentNoteId, selectedNote]);
 
     return (
         <ZustandHydration>
             <ThemeProvider theme={DefaultTheme}>
                 <GlobalStyle />
                 <GeminoteContainer>
-                    {!currentNoteId && (
+                    {!currentNote && (
                         <GeminoteMainToolbar
                             onNoteId={handleNoteId}
                             lastNoteId={lastNoteId}
                         />
                     )}
 
-                    {currentNoteId && selectedNote && (
+                    {currentNote && (
                         <GeminoteEditor
-                            key={selectedNote.id}
-                            id={selectedNote.id}
-                            title={selectedNote.title}
-                            tags={selectedNote.tags}
-                            content={selectedNote.content}
-                            updatedAt={selectedNote.updatedAt}
+                            key={currentNote.id}
+                            id={currentNote.id}
+                            title={currentNote.title}
+                            tags={currentNote.tags}
+                            content={currentNote.content}
+                            updatedAt={currentNote.updatedAt}
                             onOpenMenu={handleOpenMenu}
                             onAddNote={handleAddNote}
+                            onSelectTextForNote={onSelectTextForNote}
                         />
                     )}
                 </GeminoteContainer>

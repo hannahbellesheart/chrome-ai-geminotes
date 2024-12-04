@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import GeminoteTypography from '@geminotes/atoms/GeminoteTypography';
 import GeminoteEditableTypography from '@geminotes/molecules/GeminoteEditableTypography';
@@ -16,6 +16,7 @@ import useApi from '@geminotes/stores/useApi';
 import useGeminotes from '@geminotes/stores/useGeminotes';
 
 interface GeminoteEditorProps extends Omit<GeminoteProps, 'createdAt'> {
+    onSelectTextForNote: () => void;
     onOpenMenu?: () => void;
     onAddNote?: () => void;
 }
@@ -25,6 +26,12 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing(4)};
     margin-bottom: ${({ theme }) => theme.spacing(2)};
+`;
+
+const StyledSpacer = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-bottom: ${({ theme }) => theme.spacing(4)};
 `;
 
 const StyledEditorHeader = styled.div`
@@ -61,6 +68,7 @@ const GeminoteEditor = ({
     tags,
     content,
     updatedAt,
+    onSelectTextForNote,
     onOpenMenu,
     onAddNote,
 }: GeminoteEditorProps) => {
@@ -75,21 +83,19 @@ const GeminoteEditor = ({
             : content
     );
 
-    useEffect(() => {
-        console.log(
-            !content ||
-                content.length === 0 ||
-                (content.length === 1 && content[0] === '')
-                ? 'start typing'
-                : content
-        );
-    }, [content]);
-
     const [editableTags, setEditableTags] = useState<string[]>(tags || []);
 
-    const { editNote } = useGeminotes();
+    const { editNote, currentNote } = useGeminotes();
 
-    const { summarize, summary, extractKeyPoints, keyPoints } = useApi();
+    const {
+        summarize,
+        summary,
+        extractKeyPoints,
+        keyPoints,
+        paraphrase,
+        paraphrased,
+        loading,
+    } = useApi();
 
     const handleTitleChange = (newTitle: string) => {
         setEditableTitle(newTitle);
@@ -129,6 +135,12 @@ const GeminoteEditor = ({
 
     const handleOpenMenu = () => {
         if (onOpenMenu) {
+            // save the most recent changes
+            editNote(id, {
+                title: editableTitle,
+                content: editableContent,
+                tags: editableTags,
+            });
             onOpenMenu();
         }
     };
@@ -147,6 +159,11 @@ const GeminoteEditor = ({
         }
     };
 
+    useEffect(() => {
+        if (currentNote) {
+            setEditableContent(currentNote.content);
+        }
+    }, [currentNote]);
     return (
         <StyledWrapper>
             <GeminoteEditorNavbar
@@ -179,21 +196,45 @@ const GeminoteEditor = ({
                     Updated at {getFormattedDate(updatedAt) || 'unknown date'}
                 </GeminoteTypography>
                 <StyledButtonsWrapper>
+                    <GeminoteButton onClick={() => paraphrase()}>
+                        Paraphrase
+                    </GeminoteButton>
                     <GeminoteButton onClick={() => summarize()}>
                         Summarize
                     </GeminoteButton>
                     <GeminoteButton onClick={() => extractKeyPoints()}>
                         Extract key points
                     </GeminoteButton>
-                    <GeminoteTypography variant="body1">
-                        {summary}
-                    </GeminoteTypography>
-                    <GeminoteTypography variant="body1">
-                        {keyPoints}
-                    </GeminoteTypography>
+                    <GeminoteButton onClick={() => onSelectTextForNote()}>
+                        Select Text
+                    </GeminoteButton>
                 </StyledButtonsWrapper>
             </StyledEditorHeader>
             <StyledEditorContent>
+                {(loading && 'Generating Text...') || (
+                    <>
+                        <GeminoteTypography variant="caption" color="info">
+                            {paraphrased &&
+                                paraphrased !== '' &&
+                                'Paraphrased Note: ' + paraphrased}
+                        </GeminoteTypography>
+
+                        <StyledSpacer />
+                        <GeminoteTypography variant="caption" color="info">
+                            {summary &&
+                                summary !== '' &&
+                                'Summarized Note: ' + summary}
+                        </GeminoteTypography>
+
+                        <StyledSpacer />
+                        <GeminoteTypography variant="caption" color="info">
+                            {keyPoints &&
+                                keyPoints !== '' &&
+                                'Key Points of the Note: ' + keyPoints}
+                        </GeminoteTypography>
+                    </>
+                )}
+                <StyledSpacer />
                 {editableContent &&
                     editableContent.map((line, index) => (
                         <GeminoteEditableTypography
