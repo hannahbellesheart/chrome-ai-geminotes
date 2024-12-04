@@ -8,44 +8,22 @@ import GeminoteContainer from '@geminotes/atoms/GeminoteContainer';
 import GeminoteMainToolbar from '@geminotes/organisms/GeminoteMainToolbar';
 import GeminoteEditor from '@geminotes/organisms/GeminoteEditor';
 import useGeminotes from '@geminotes/stores/useGeminotes';
-import useContent from '@geminotes/stores/useContent';
+import useApi from './stores/useApi';
+
 function App() {
     const [lastNoteId, setLastNoteId] = useState('');
 
-    const { addNote, editNote, setCurrentNote, currentNote } = useGeminotes();
+    const { addNote, setCurrentNote, currentNote } = useGeminotes();
+
+    const { clear } = useApi();
     const handleNoteId = (noteId: string) => {
         setCurrentNote(noteId);
-    };
-    const { currentTabId, getTabId, executeScript } = useContent();
-    // Get Tab Id for the current content store
-    getTabId();
-    const onSelectTextForNote = () => {
-        executeScript(() => {
-            const iconUrl = chrome.runtime.getURL(
-                '/assets/images/cursor-pointer.png'
-            );
-            document.body.style.cursor = `url(${iconUrl}), auto`;
-        });
-        chrome.tabs.sendMessage(
-            currentTabId,
-            {
-                action: 'activeSelect',
-                message: currentTabId,
-            },
-            (selectedText) => {
-                // use the recent created one or the selected one
-                if (currentNote) {
-                    editNote(currentNote.id, {
-                        content: [selectedText],
-                    });
-                }
-            }
-        );
     };
 
     const handleOpenMenu = () => {
         setLastNoteId(currentNote?.id || '');
         setCurrentNote('');
+        clear();
     };
 
     const handleAddNote = () => {
@@ -80,7 +58,6 @@ function App() {
                             updatedAt={currentNote.updatedAt}
                             onOpenMenu={handleOpenMenu}
                             onAddNote={handleAddNote}
-                            onSelectTextForNote={onSelectTextForNote}
                         />
                     )}
                 </GeminoteContainer>

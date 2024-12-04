@@ -16,7 +16,6 @@ import useApi from '@geminotes/stores/useApi';
 import useGeminotes from '@geminotes/stores/useGeminotes';
 
 interface GeminoteEditorProps extends Omit<GeminoteProps, 'createdAt'> {
-    onSelectTextForNote: () => void;
     onOpenMenu?: () => void;
     onAddNote?: () => void;
 }
@@ -68,7 +67,6 @@ const GeminoteEditor = ({
     tags,
     content,
     updatedAt,
-    onSelectTextForNote,
     onOpenMenu,
     onAddNote,
 }: GeminoteEditorProps) => {
@@ -219,9 +217,6 @@ const GeminoteEditor = ({
                     </GeminoteButton>
                     <GeminoteButton onClick={() => extractKeyPoints()}>
                         Extract key points
-                    </GeminoteButton>
-                    <GeminoteButton onClick={() => onSelectTextForNote()}>
-                        Select Text
                     </GeminoteButton>
                 </StyledButtonsWrapper>
             </StyledEditorHeader>
