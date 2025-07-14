@@ -78,3 +78,6 @@ Geminotes combines simplicity, intelligence, and productivity in a single tool. 
 
 -   **GitHub Repository**: [Link to Repository](https://github.com/STRIX-DEV-ORG/geminotes)
 -   **Design Files**: [Link to Figma Designs](https://www.figma.com/design/jdN0m6j9M1rFf6vqLj4G9U/Geminotes?node-id=0-1&t=Vx4G1K2tINxOJxjy-1)
+
+
+<img width="1554" height="4220" alt="image" src="https://github.com/user-attachments/assets/03a9abf3-3ad2-45cc-91ae-1ff76c3ca6ed" />
